@@ -1,0 +1,5 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '6.8'
+    archiveBase = 'PROJECT'
+    jarFile = './gradle/gradle-wrapper.jar'
+}

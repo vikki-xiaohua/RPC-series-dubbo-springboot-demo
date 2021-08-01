@@ -1,0 +1,69 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '2.1.1.RELEASE' apply false
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE' apply false
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    group 'com.demo.dubbo'
+    version '1.0.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'distribution'
+
+    if (!name.contains("lib")) {
+        apply plugin: 'org.springframework.boot'
+        apply plugin: 'application'
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom(SpringBootPlugin.BOM_COORDINATES)
+        }
+
+        dependencies {
+            dependencySet(group: 'org.apache.dubbo', version: '2.7.1') {
+                entry 'dubbo'
+                entry 'dubbo-spring-boot-starter'
+            }
+        }
+
+        dependencies {
+            dependencySet(group: 'org.apache.curator', version: '4.0.0') {
+                entry 'curator-framework'
+                entry 'curator-recipes'
+            }
+        }
+        dependencies {
+            dependency 'org.apache.zookeeper:zookeeper:3.5.5'
+        }
+    }
+
+    if (!project.name.contains("lib")) {
+        jar {
+            enabled true
+        }
+
+        applicationDefaultJvmArgs = ['-Xms256m', '-Xmx256m']
+    }
+}
